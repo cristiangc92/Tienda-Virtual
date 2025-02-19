@@ -12,6 +12,7 @@ const EditProduct = () => {
     imagen: null,
   });
   const [showModal, setShowModal] = useState(false); // Para controlar el modal de confirmación
+  const [showSuccessModal, setShowSuccessModal] = useState(false); // Modal de éxito
 
   useEffect(() => {
     // Obtener los datos del producto
@@ -47,8 +48,7 @@ const EditProduct = () => {
       await axios.put(`https://tienda-virtual-n5qz.onrender.com/api/productos/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      alert("Producto actualizado con éxito");
-      navigate("/");  // Redirigir al home o a la página que desees
+      setShowSuccessModal(true);  // Mostrar el modal de éxito
     } catch (error) {
       console.error("Error al modificar producto", error);
       alert("Hubo un error al actualizar el producto");
@@ -57,6 +57,10 @@ const EditProduct = () => {
 
   const handleShowModal = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+    navigate("/"); // Redirigir al home o a la página que desees
+  };
 
   return (
     <div className="container mt-4">
@@ -130,6 +134,32 @@ const EditProduct = () => {
                   }}
                 >
                   Guardar Cambios
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de éxito */}
+      {showSuccessModal && (
+        <div className="modal fade show" style={{ display: "block" }} tabIndex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="modalExitoLabel">¡Éxito!</h5>
+                <button type="button" className="btn-close" onClick={handleCloseSuccessModal} aria-label="Cerrar"></button>
+              </div>
+              <div className="modal-body">
+                <p>El producto ha sido actualizado con éxito.</p>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleCloseSuccessModal}
+                >
+                  Aceptar
                 </button>
               </div>
             </div>
