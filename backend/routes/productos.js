@@ -35,15 +35,10 @@ router.post("/", upload.single("imagen"), async (req, res) => {
     let imagenUrl = null;
     if (req.file) {
       const result = await cloudinary.uploader.upload_stream(
-        { resource_type: "auto" }, // Auto-detectar el tipo de archivo (imagen, video, etc.)
-        (error, result) => {
-          if (error) {
-            return res.status(500).json({ error: "Error al subir la imagen a Cloudinary" });
-          }
-          imagenUrl = result.secure_url; // Guardamos la URL segura de la imagen subida
-        }
-      );
-      result.end(req.file.buffer); // Subimos el archivo en memoria
+        { resource_type: "auto" }
+      ).end(req.file.buffer); // Esperamos a que se complete la carga
+
+      imagenUrl = result.secure_url; // Guardamos la URL segura de la imagen subida
     }
 
     // Crear el producto con la URL de la imagen
