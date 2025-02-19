@@ -34,12 +34,18 @@ router.post("/", upload.single("imagen"), async (req, res) => {
     // Subir la imagen a Cloudinary
     let imagenUrl = null;
     if (req.file) {
-      // Subimos la imagen directamente desde el buffer a Cloudinary
-      const result = await cloudinary.uploader.upload(req.file.buffer, {
-        resource_type: "auto", // Detecta el tipo de archivo automáticamente (imagen, video, etc.)
-      });
-
-      imagenUrl = result.secure_url; // Guardamos la URL segura de la imagen subida
+      // Subimos la imagen a Cloudinary utilizando el buffer de la imagen
+      const result = await cloudinary.uploader.upload_stream(
+        { resource_type: "auto" }, // Auto-detectar el tipo de archivo (imagen, video, etc.)
+        (error, result) => {
+          if (error) {
+            return res.status(500).json({ error: "Error al subir la imagen a Cloudinary" });
+          }
+          imagenUrl = result.secure_url; // Guardamos la URL segura de la imagen subida
+        }
+      );
+      // Usamos el método .end para enviar el buffer al stream
+      result.end(req.file.buffer); 
     }
 
     // Crear el producto con la URL de la imagen
@@ -47,7 +53,7 @@ router.post("/", upload.single("imagen"), async (req, res) => {
       nombre,
       descripcion,
       precio,
-      imagen: imagenUrl, // Asignamos la URL de la imagen al campo imagen
+      imagen: imagenUrl,
     });
 
     res.json(nuevoProducto);
