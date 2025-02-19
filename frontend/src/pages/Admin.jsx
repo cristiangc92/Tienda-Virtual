@@ -30,10 +30,10 @@ const Admin = () => {
     formData.append("descripcion", producto.descripcion);
     formData.append("precio", producto.precio);
     formData.append("imagen", producto.imagen);
-  
+
     // Verificar si la imagen se está agregando correctamente al FormData
     console.log("FormData enviado:", formData);
-  
+
     try {
       await axios.post("https://tienda-virtual-n5qz.onrender.com/api/productos", formData, {
         headers: { "Content-Type": "multipart/form-data" },
