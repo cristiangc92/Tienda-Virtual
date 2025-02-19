@@ -27,37 +27,18 @@ router.get("/", async (req, res) => {
 });
 
 // Crear producto con imagen subida a Cloudinary
-router.post("/", upload, async (req, res) => {
+router.post("/", upload.single("imagen"), async (req, res) => {
+  console.log('Archivo recibido:', req.file); // Verifica si el archivo está presente en req.file
   try {
     const { nombre, descripcion, precio } = req.body;
-
-    // Subir imagen a Cloudinary
-    if (req.file) {
-      const result = await cloudinary.uploader.upload_stream(
-        { folder: "productos" }, // Puedes elegir la carpeta donde se almacenarán las imágenes
-        async (error, result) => {
-          if (error) {
-            console.error("Error al subir la imagen a Cloudinary", error);
-            return res.status(500).json({ error: "Error al subir la imagen" });
-          }
-
-          // Crear el producto con la URL de la imagen
-          const nuevoProducto = await Producto.create({
-            nombre,
-            descripcion,
-            precio,
-            imagen: result.secure_url // Guardamos la URL segura de la imagen en Cloudinary
-          });
-
-          res.json(nuevoProducto);
-        }
-      );
-      req.pipe(result); // Pasamos la imagen al stream de Cloudinary
-    } else {
-      // Si no se sube imagen, creamos el producto sin imagen
-      const nuevoProducto = await Producto.create({ nombre, descripcion, precio });
-      res.json(nuevoProducto);
+    if (!req.file) {
+      return res.status(400).json({ error: "No se ha subido ningún archivo" });
     }
+
+    const imagen = req.file ? `/uploads/${req.file.filename}` : null;
+
+    const nuevoProducto = await Producto.create({ nombre, descripcion, precio, imagen });
+    res.json(nuevoProducto);
   } catch (error) {
     console.error("Error al agregar producto:", error);
     res.status(500).json({ error: "Error interno del servidor" });

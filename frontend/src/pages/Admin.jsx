@@ -30,7 +30,10 @@ const Admin = () => {
     formData.append("descripcion", producto.descripcion);
     formData.append("precio", producto.precio);
     formData.append("imagen", producto.imagen);
-
+  
+    // Verificar si la imagen se está agregando correctamente al FormData
+    console.log("FormData enviado:", formData);
+  
     try {
       await axios.post("https://tienda-virtual-n5qz.onrender.com/api/productos", formData, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -40,6 +43,7 @@ const Admin = () => {
       setShowModal(true);
       setProducto({ nombre: "", descripcion: "", precio: "", imagen: null });
     } catch (error) {
+      console.log("Error al agregar producto:", error);
       setModalTitle("Error");
       setModalMessage("Hubo un error al agregar el producto.");
       setShowModal(true);
@@ -96,6 +100,7 @@ const Admin = () => {
                 required
               />
             </Form.Group>
+
 
             <Button type="submit" variant="primary" block>
               Agregar Producto
