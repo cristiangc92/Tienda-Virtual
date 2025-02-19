@@ -11,7 +11,7 @@ const Home = () => {
 
     const eliminarProducto = async (id) => {
         if (window.confirm("¿Estás seguro de que quieres eliminar este producto?")) {
-            await axios.delete(`http://localhost:5000/api/productos/${id}`);
+            await axios.delete(`https://tienda-virtual-n5qz.onrender.com/api/productos/${id}`);
             setProductos(productos.filter((producto) => producto.id !== id));
         }
     };
@@ -29,7 +29,7 @@ const Home = () => {
               <div key={producto.id} className="col d-flex justify-content-center">
                 <div className="card">
                   <img
-                    src={`http://localhost:5000${producto.imagen}`}
+                    src={`https://tienda-virtual-n5qz.onrender.com${producto.imagen}`}
                     className="card-img-top img-producto"
                     alt={producto.nombre}
                   />

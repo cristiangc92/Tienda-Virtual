@@ -32,7 +32,7 @@ const Admin = () => {
     formData.append("imagen", producto.imagen);
 
     try {
-      await axios.post("http://localhost:5000/api/productos", formData, {
+      await axios.post("https://tienda-virtual-n5qz.onrender.com/api/productos", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setModalTitle("Producto Agregado");
