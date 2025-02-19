@@ -4,16 +4,16 @@ const cloudinary = require("cloudinary").v2;
 const Producto = require("../models/Producto");
 const router = express.Router();
 
-// Configuración de Cloudinary
+// Configura Cloudinary
 cloudinary.config({
-  cloud_name: 'djfobc4lo',  // Reemplaza con tu Cloud name
-  api_key: '526842571593466',  // Reemplaza con tu API Key
-  api_secret: 'l6rttKHtsAwYuNAzQkMOcxEynlk'  // Reemplaza con tu API Secret
+  cloud_name: "djfobc4lo",  // Reemplaza con tu Cloud name
+  api_key: "526842571593466",        // Reemplaza con tu API Key
+  api_secret: "l6rttKHtsAwYuNAzQkMOcxEynlk",   // Reemplaza con tu API Secret
 });
 
-// Configuración de Multer para usar memoria (no almacenamos localmente)
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage }).single("imagen");
+// Configuración de Multer (para recibir archivos de la solicitud)
+const storage = multer.memoryStorage(); // Usamos memoria para subir directamente a Cloudinary
+const upload = multer({ storage: storage });
 
 // Obtener todos los productos
 router.get("/", async (req, res) => {
@@ -26,18 +26,34 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Crear producto con imagen subida a Cloudinary
+// Ruta para agregar un producto
 router.post("/", upload.single("imagen"), async (req, res) => {
-  console.log('Archivo recibido:', req.file); // Verifica si el archivo está presente en req.file
   try {
     const { nombre, descripcion, precio } = req.body;
-    if (!req.file) {
-      return res.status(400).json({ error: "No se ha subido ningún archivo" });
+
+    // Subir la imagen a Cloudinary
+    let imagenUrl = null;
+    if (req.file) {
+      const result = await cloudinary.uploader.upload_stream(
+        { resource_type: "auto" }, // Auto-detectar el tipo de archivo (imagen, video, etc.)
+        (error, result) => {
+          if (error) {
+            return res.status(500).json({ error: "Error al subir la imagen a Cloudinary" });
+          }
+          imagenUrl = result.secure_url; // Guardamos la URL segura de la imagen subida
+        }
+      );
+      result.end(req.file.buffer); // Subimos el archivo en memoria
     }
 
-    const imagen = req.file ? `/uploads/${req.file.filename}` : null;
+    // Crear el producto con la URL de la imagen
+    const nuevoProducto = await Producto.create({
+      nombre,
+      descripcion,
+      precio,
+      imagen: imagenUrl,
+    });
 
-    const nuevoProducto = await Producto.create({ nombre, descripcion, precio, imagen });
     res.json(nuevoProducto);
   } catch (error) {
     console.error("Error al agregar producto:", error);
