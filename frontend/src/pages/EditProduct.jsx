@@ -11,6 +11,7 @@ const EditProduct = () => {
     precio: "",
     imagen: null,
   });
+  const [showModal, setShowModal] = useState(false); // Para controlar el modal de confirmación
 
   useEffect(() => {
     // Obtener los datos del producto
@@ -56,6 +57,9 @@ const EditProduct = () => {
     }
   };
 
+  const handleShowModal = () => setShowModal(true);
+  const handleCloseModal = () => setShowModal(false);
+
   return (
     <div className="container mt-4">
       <h2>Editar Producto</h2>
@@ -98,10 +102,42 @@ const EditProduct = () => {
             onChange={handleFileChange}
           />
         </div>
-        <button type="submit" className="btn btn-primary">
-          Guardar Cambios
+        <button type="button" className="btn btn-warning" onClick={handleShowModal}>
+          Confirmar cambios
         </button>
       </form>
+
+      {/* Modal de confirmación de edición */}
+      {showModal && (
+        <div className="modal fade show" style={{ display: "block" }} tabIndex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="modalEditarLabel">Confirmar Edición</h5>
+                <button type="button" className="btn-close" onClick={handleCloseModal} aria-label="Cerrar"></button>
+              </div>
+              <div className="modal-body">
+                <p>¿Estás seguro de que quieres guardar los cambios del producto <strong>{producto.nombre}</strong>?</p>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => {
+                    handleSubmit();
+                    handleCloseModal();
+                  }}
+                >
+                  Guardar Cambios
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
