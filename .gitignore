@@ -1,0 +1,46 @@
+# Dependencias de Node.js
+node_modules/
+
+# Dependencias del frontend (si usas una carpeta específica para el frontend)
+frontend/node_modules/
+
+# Archivos de entorno de configuración
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Logs
+*.log
+
+# Archivos de compilación de producción de React
+build/
+
+# Archivos de compilación de Node.js (si usas algo como TypeScript o herramientas de construcción)
+dist/
+
+# Archivos temporales generados por editores (VSCode, etc.)
+.vscode/
+.idea/
+
+# Archivos del sistema operativo (MacOS, Windows)
+.DS_Store
+Thumbs.db
+
+# Directorios de imágenes o archivos subidos (si no deseas subir imágenes de productos a Git)
+uploads/
+
+# Archivos de configuración de la terminal
+*.log
+
+# Archivos de configuración de NPM
+npm-debug.log*
+
+# Archivos de configuración de Yarn
+yarn-debug.log*
+yarn-error.log*
+
+# Otros archivos y carpetas que puedas querer excluir
+*.bak
+*.swp

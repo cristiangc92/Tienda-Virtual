@@ -1,0 +1,61 @@
+/* Fondo de la página */
+body {
+    background-color: #f8f9fa;
+  }
+  
+  /* Estilo para el contenedor del formulario */
+  .container {
+    max-width: 100%;
+    padding: 30px;
+  }
+  
+  /* Estilo para el formulario */
+  form {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    background-color: #ffffff;
+  }
+  
+  /* Estilo para el título */
+  h2 {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  /* Alineación del botón */
+  button[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    font-size: 1.2rem;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+
+  /* Estilo para el modal */
+.modal-content {
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Estilo para el botón del modal */
+  .modal-footer .btn-secondary {
+    border-radius: 5px;
+    padding: 8px 20px;
+    font-weight: bold;
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .modal-footer .btn-secondary:hover {
+    background-color: #0056b3;
+  }
+  
