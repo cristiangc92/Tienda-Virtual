@@ -46,7 +46,7 @@ const Home = () => {
                   <strong>${producto.precio}</strong>
                 </p>
                 <a
-                  href={`https://wa.me/123456789?text=Hola, me interesa ${producto.nombre}`}
+                  href={`https://wa.me/+543854836255?text=Hola, me interesa ${producto.nombre}`}
                   className="btn btn-success"
                 >
                   <i className="fab fa-whatsapp"></i> Comprar
