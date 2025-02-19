@@ -4,16 +4,21 @@ import "./Home.css";
 
 const Home = () => {
   const [productos, setProductos] = useState([]);
+  const [productoAEliminar, setProductoAEliminar] = useState(null); // Estado para el producto a eliminar
 
   useEffect(() => {
     axios.get("https://tienda-virtual-n5qz.onrender.com/api/productos").then((res) => setProductos(res.data));
   }, []);
 
+  // Función para abrir el modal de confirmación de eliminación
+  const confirmarEliminacion = (producto) => {
+    setProductoAEliminar(producto);
+  };
+
+  // Función para eliminar el producto
   const eliminarProducto = async (id) => {
-    if (window.confirm("¿Estás seguro de que quieres eliminar este producto?")) {
-      await axios.delete(`https://tienda-virtual-n5qz.onrender.com/api/productos/${id}`);
-      setProductos(productos.filter((producto) => producto.id !== id));
-    }
+    await axios.delete(`https://tienda-virtual-n5qz.onrender.com/api/productos/${id}`);
+    setProductos(productos.filter((producto) => producto.id !== id));
   };
 
   return (
@@ -54,7 +59,9 @@ const Home = () => {
                 </button>
                 <button
                   className="btn btn-danger ms-2"
-                  onClick={() => eliminarProducto(producto.id)}
+                  data-bs-toggle="modal"
+                  data-bs-target="#modalEliminar"
+                  onClick={() => confirmarEliminacion(producto)} // Abre el modal de eliminación
                 >
                   Eliminar
                 </button>
@@ -63,6 +70,37 @@ const Home = () => {
           </div>
         ))}
       </div>
+
+      {/* Modal de confirmación de eliminación */}
+      <div className="modal fade" id="modalEliminar" tabIndex="-1" aria-labelledby="modalEliminarLabel" aria-hidden="true">
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="modalEliminarLabel">Confirmar Eliminación</h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div className="modal-body">
+              {productoAEliminar && (
+                <>
+                  <p>¿Estás seguro de que quieres eliminar <strong>{productoAEliminar.nombre}</strong>?</p>
+                </>
+              )}
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={() => eliminarProducto(productoAEliminar.id)} // Llama a la función de eliminación
+                data-bs-dismiss="modal"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <footer className="footer bg-body-tertiary">
         <div className="container-fluid text-center">
           <span className="mx-auto">Tienda Virtual© 2025. Todos los derechos reservados.</span>
