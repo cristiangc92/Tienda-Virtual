@@ -16,9 +16,12 @@ const Home = () => {
   };
 
   // Función para eliminar el producto
-  const eliminarProducto = async (id) => {
-    await axios.delete(`https://tienda-virtual-n5qz.onrender.com/api/productos/${id}`);
-    setProductos(productos.filter((producto) => producto.id !== id));
+  const eliminarProducto = async () => {
+    if (productoAEliminar) {
+      await axios.delete(`https://tienda-virtual-n5qz.onrender.com/api/productos/${productoAEliminar.id}`);
+      setProductos(productos.filter((producto) => producto.id !== productoAEliminar.id));
+      setProductoAEliminar(null); // Limpiar el producto a eliminar
+    }
   };
 
   return (
@@ -81,9 +84,7 @@ const Home = () => {
             </div>
             <div className="modal-body">
               {productoAEliminar && (
-                <>
-                  <p>¿Estás seguro de que quieres eliminar <strong>{productoAEliminar.nombre}</strong>?</p>
-                </>
+                <p>¿Estás seguro de que quieres eliminar <strong>{productoAEliminar.nombre}</strong>?</p>
               )}
             </div>
             <div className="modal-footer">
@@ -91,8 +92,7 @@ const Home = () => {
               <button
                 type="button"
                 className="btn btn-danger"
-                onClick={() => eliminarProducto(productoAEliminar.id)} // Llama a la función de eliminación
-                data-bs-dismiss="modal"
+                onClick={() => { eliminarProducto(); document.getElementById('modalEliminar').classList.remove('show'); }} // Eliminar y cerrar el modal
               >
                 Eliminar
               </button>
