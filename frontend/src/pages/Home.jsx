@@ -6,7 +6,7 @@ const Home = () => {
     const [productos, setProductos] = useState([]);
 
     useEffect(() => {
-        axios.get("http://localhost:5000/api/productos").then((res) => setProductos(res.data));
+        axios.get("https://tienda-virtual-n5qz.onrender.com/api/productos").then((res) => setProductos(res.data));
     }, []);
 
     const eliminarProducto = async (id) => {
