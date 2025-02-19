@@ -47,6 +47,9 @@ router.post("/", upload.single("imagen"), async (req, res) => {
       );
       // Usamos el método .end para enviar el buffer al stream
       result.end(req.file.buffer); 
+
+      console.log("Imagen subida a Cloudinary:", result);  // Aquí mostramos el resultado de Cloudinary
+      imagenUrl = result.secure_url;  // Guardamos la URL segura de la imagen subida
     }
 
     // Crear el producto con la URL de la imagen
