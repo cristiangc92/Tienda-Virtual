@@ -32,25 +32,28 @@ router.post("/", upload.single("imagen"), async (req, res) => {
     console.log("Archivo recibido:", req.file);
     const { nombre, descripcion, precio } = req.body;
 
-    // Subir la imagen a Cloudinary
     let imagenUrl = null;
     if (req.file) {
-      // Subimos la imagen a Cloudinary utilizando el buffer de la imagen
-      const result = await cloudinary.uploader.upload_stream(
-        { resource_type: "auto" }, // Auto-detectar el tipo de archivo (imagen, video, etc.)
-        (error, result) => {
-          if (error) {
-            return res.status(500).json({ error: "Error al subir la imagen a Cloudinary" });
+      // Subir la imagen a Cloudinary usando una Promesa
+      const result = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { resource_type: "auto" },
+          (error, result) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(result);
+            }
           }
-          imagenUrl = result.secure_url; // Guardamos la URL segura de la imagen subida
-        }
-      );
-      // Usamos el método .end para enviar el buffer al stream
-      result.end(req.file.buffer); 
+        );
+        stream.end(req.file.buffer);
+      });
 
-      console.log("Imagen subida a Cloudinary:", result);  // Aquí mostramos el resultado de Cloudinary
-      imagenUrl = result.secure_url;  // Guardamos la URL segura de la imagen subida
+      console.log("Imagen subida a Cloudinary:", result);
+      imagenUrl = result.secure_url; // Guardamos la URL de la imagen subida
     }
+
+    console.log("URL de la imagen:", imagenUrl);
 
     // Crear el producto con la URL de la imagen
     const nuevoProducto = await Producto.create({
@@ -66,6 +69,7 @@ router.post("/", upload.single("imagen"), async (req, res) => {
     res.status(500).json({ error: "Error interno del servidor" });
   }
 });
+
 
 
 // Modificar un producto
