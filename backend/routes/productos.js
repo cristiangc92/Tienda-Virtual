@@ -29,6 +29,7 @@ router.get("/", async (req, res) => {
 // Ruta para agregar un producto
 router.post("/", upload.single("imagen"), async (req, res) => {
   try {
+    console.log("Archivo recibido:", req.file);
     const { nombre, descripcion, precio } = req.body;
 
     // Subir la imagen a Cloudinary
