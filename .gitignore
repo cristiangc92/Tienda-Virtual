@@ -28,9 +28,6 @@ dist/
 .DS_Store
 Thumbs.db
 
-# Directorios de imágenes o archivos subidos (si no deseas subir imágenes de productos a Git)
-uploads/
-
 # Archivos de configuración de la terminal
 *.log
 
