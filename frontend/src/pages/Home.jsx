@@ -29,7 +29,7 @@ const Home = () => {
               <div key={producto.id} className="col d-flex justify-content-center">
                 <div className="card">
                   <img
-                    src={`https://tienda-virtual-n5qz.onrender.com${producto.imagen}`}
+                    src={`https://tienda-virtual-n5qz.onrender.com/${producto.imagen}`}
                     className="card-img-top img-producto"
                     alt={producto.nombre}
                   />
