@@ -4,6 +4,24 @@ body {
   background-color: #f9f9f9;
 }
 
+html, body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  flex: 1;
+}
+
+/* Contenedor principal para ocupar el espacio disponible */
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 /* Estilo para las tarjetas */
 .card {
   width: 20rem; /* Ajusta el tamaño según sea necesario */
@@ -68,6 +86,7 @@ body {
 }
 
 .footer {
+  margin-top: auto;
   padding: 3rem;
   background-color: #f1f1f1;
   text-align: center;
