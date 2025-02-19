@@ -29,9 +29,7 @@ const EditProduct = () => {
     setProducto({ ...producto, imagen: e.target.files[0] });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
     const formData = new FormData();
 
     // Solo agregar los campos que fueron modificados
@@ -63,7 +61,7 @@ const EditProduct = () => {
   return (
     <div className="container mt-4">
       <h2>Editar Producto</h2>
-      <form onSubmit={handleSubmit}>
+      <form>
         <div className="mb-3">
           <label className="form-label">Nombre</label>
           <input
@@ -127,7 +125,7 @@ const EditProduct = () => {
                   type="button"
                   className="btn btn-primary"
                   onClick={() => {
-                    handleSubmit();
+                    handleSubmit();  // Llamar a handleSubmit directamente sin el evento
                     handleCloseModal();
                   }}
                 >
