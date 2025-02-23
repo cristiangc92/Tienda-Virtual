@@ -94,15 +94,19 @@ router.put("/:id", upload.single("imagen"), async (req, res) => {
 
     // Si se sube una nueva imagen, la agregamos al objeto de actualización
     if (req.file) {
-      // Subir la imagen a Cloudinary
-      const result = await cloudinary.uploader.upload(req.file.buffer, {
-        folder: "productos", // Carpeta en Cloudinary donde se almacenará la imagen
-        use_filename: true,  // Utiliza el nombre del archivo original
-        unique_filename: true // Asegura que el nombre del archivo sea único
+      // Subir la imagen a Cloudinary usando un stream
+      const result = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "productos", resource_type: "auto" },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        stream.end(req.file.buffer);
       });
 
-      // Guardar la URL de la imagen en el campo 'imagen' del producto
-      updatedData.imagen = result.secure_url;  // URL accesible públicamente
+      updatedData.imagen = result.secure_url; // URL de la nueva imagen
     }
 
     // Actualizar el producto con los datos proporcionados
@@ -114,6 +118,7 @@ router.put("/:id", upload.single("imagen"), async (req, res) => {
     res.status(500).json({ error: "Error interno del servidor" });
   }
 });
+
 
 
 // Eliminar un producto
