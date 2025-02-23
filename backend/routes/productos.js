@@ -150,4 +150,22 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+// Obtener un solo producto por ID
+router.get("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const producto = await Producto.findByPk(id);
+
+    if (!producto) {
+      return res.status(404).json({ error: "Producto no encontrado" });
+    }
+
+    res.json(producto);
+  } catch (error) {
+    console.error("Error al obtener producto:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
+
 module.exports = router;
