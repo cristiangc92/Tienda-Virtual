@@ -1,127 +1,128 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Container, Form, Button, Row, Col, Modal } from "react-bootstrap";
-import "./Admin.css";
+import "./Home.css";
 
 const Admin = () => {
-  const [producto, setProducto] = useState({
-    nombre: "",
-    descripcion: "",
-    precio: "",
-    imagen: null,
-  });
+  const [productos, setProductos] = useState([]);
+  const [productoAEliminar, setProductoAEliminar] = useState(null);
+  const navigate = useNavigate();
 
-  const [showModal, setShowModal] = useState(false);
-  const [modalMessage, setModalMessage] = useState("");
-  const [modalTitle, setModalTitle] = useState("");
+  useEffect(() => {
+    cargarProductos();
+  }, []);
 
-  const handleChange = (e) => {
-    setProducto({ ...producto, [e.target.name]: e.target.value });
+  const cargarProductos = () => {
+    axios
+      .get("https://tienda-virtual-n5qz.onrender.com/api/productos")
+      .then((res) => setProductos(res.data));
   };
 
-  const handleFileChange = (e) => {
-    setProducto({ ...producto, imagen: e.target.files[0] });
+  const confirmarEliminacion = (producto) => {
+    setProductoAEliminar(producto);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append("nombre", producto.nombre);
-    formData.append("descripcion", producto.descripcion);
-    formData.append("precio", producto.precio);
-    formData.append("imagen", producto.imagen);
-
-    // Verificar si la imagen se está agregando correctamente al FormData
-    console.log("FormData enviado:", formData);
-
-    try {
-      await axios.post("https://tienda-virtual-n5qz.onrender.com/api/productos", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      setModalTitle("Producto Agregado");
-      setModalMessage("El producto ha sido agregado con éxito.");
-      setShowModal(true);
-      setProducto({ nombre: "", descripcion: "", precio: "", imagen: null });
-    } catch (error) {
-      console.log("Error al agregar producto:", error);
-      setModalTitle("Error");
-      setModalMessage("Hubo un error al agregar el producto.");
-      setShowModal(true);
-    }
+  const eliminarProducto = async (id) => {
+    await axios.delete(`https://tienda-virtual-n5qz.onrender.com/api/productos/${id}`);
+    setProductos(productos.filter((producto) => producto.id !== id));
   };
-
-  const handleCloseModal = () => setShowModal(false);
 
   return (
-    <Container className="mt-5">
-      <h2 className="text-center mb-4">Agregar Producto</h2>
-      <Row className="justify-content-center">
-        <Col md={8} lg={6}>
-          <Form onSubmit={handleSubmit} className="shadow-sm p-4 rounded bg-white">
-            <Form.Group className="mb-3">
-              <Form.Label>Nombre</Form.Label>
-              <Form.Control
-                type="text"
-                name="nombre"
-                value={producto.nombre}
-                onChange={handleChange}
-                required
+    <div className="container">
+      <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <div className="container-fluid">
+          <span className="navbar-brand mb-0 h1 mx-auto">Panel de Administración</span>
+        </div>
+      </nav>
+
+      <button
+        className="btn btn-primary my-3"
+        onClick={() => navigate("/admin/nuevo")}
+      >
+        Agregar Nuevo Producto
+      </button>
+
+      <div className="row row-cols-1 row-cols-md-3 g-4">
+        {productos.map((producto) => (
+          <div key={producto.id} className="col d-flex justify-content-center">
+            <div className="card">
+              <img
+                src={producto.imagen}
+                className="card-img-top img-producto"
+                alt={producto.nombre}
               />
-            </Form.Group>
+              <div className="card-body">
+                <h5 className="card-title">{producto.nombre}</h5>
+                <p className="card-text">{producto.descripcion}</p>
+                <p className="card-text">
+                  <strong>${producto.precio}</strong>
+                </p>
+                <button
+                  className="btn btn-warning"
+                  onClick={() => navigate(`/admin/editar/${producto.id}`)}
+                >
+                  Editar
+                </button>
+                <button
+                  className="btn btn-danger ms-2"
+                  data-bs-toggle="modal"
+                  data-bs-target="#modalEliminar"
+                  onClick={() => confirmarEliminacion(producto)}
+                >
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
 
-            <Form.Group className="mb-3">
-              <Form.Label>Descripción</Form.Label>
-              <Form.Control
-                as="textarea"
-                name="descripcion"
-                value={producto.descripcion}
-                onChange={handleChange}
-                required
-              />
-            </Form.Group>
+      {/* Modal de confirmación de eliminación */}
+      <div
+        className="modal fade"
+        id="modalEliminar"
+        tabIndex="-1"
+        aria-labelledby="modalEliminarLabel"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="modalEliminarLabel">
+                Confirmar Eliminación
+              </h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div className="modal-body">
+              {productoAEliminar && (
+                <p>
+                  ¿Estás seguro de que quieres eliminar <strong>{productoAEliminar.nombre}</strong>?
+                </p>
+              )}
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
+                Cancelar
+              </button>
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={() => eliminarProducto(productoAEliminar.id)}
+                data-bs-dismiss="modal"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-            <Form.Group className="mb-3">
-              <Form.Label>Precio</Form.Label>
-              <Form.Control
-                type="number"
-                name="precio"
-                value={producto.precio}
-                onChange={handleChange}
-                required
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Imagen</Form.Label>
-              <Form.Control
-                type="file"
-                name="imagen"
-                onChange={handleFileChange}
-                required
-              />
-            </Form.Group>
-
-
-            <Button type="submit" variant="primary" block>
-              Agregar Producto
-            </Button>
-          </Form>
-        </Col>
-      </Row>
-
-      {/* Modal para mostrar mensajes de éxito o error */}
-      <Modal show={showModal} onHide={handleCloseModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>{modalTitle}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>{modalMessage}</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleCloseModal}>
-            Cerrar
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </Container>
+      <footer className="footer bg-body-tertiary mt-4">
+        <div className="container-fluid text-center">
+          <span className="mx-auto">Tienda Virtual© 2025. Todos los derechos reservados.</span>
+        </div>
+      </footer>
+    </div>
   );
 };
 
