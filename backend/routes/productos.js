@@ -2,13 +2,15 @@ const express = require("express");
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
 const Producto = require("../models/Producto");
+const dotenv = require("dotenv");
+dotenv.config();
 const router = express.Router();
 
 // Configura Cloudinary
 cloudinary.config({
-  cloud_name: "djfobc4lo",  // Reemplaza con tu Cloud name
-  api_key: "526842571593466",        // Reemplaza con tu API Key
-  api_secret: "l6rttKHtsAwYuNAzQkMOcxEynlk",   // Reemplaza con tu API Secret
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 // Configuración de Multer (para recibir archivos de la solicitud)
@@ -70,8 +72,6 @@ router.post("/", upload.single("imagen"), async (req, res) => {
   }
 });
 
-
-
 // Modificar un producto
 router.put("/:id", upload.single("imagen"), async (req, res) => {
   try {
@@ -119,7 +119,6 @@ router.put("/:id", upload.single("imagen"), async (req, res) => {
   }
 });
 
-
 // Eliminar un producto
 router.delete("/:id", async (req, res) => {
   try {
@@ -134,8 +133,8 @@ router.delete("/:id", async (req, res) => {
     // Verificar si el producto tiene una imagen
     if (producto.imagen) {
       // Extraer el ID de la imagen de la URL (esto depende de cómo almacenes la URL de la imagen)
-      const imageId = producto.imagen.split('/').pop().split('.')[0]; // Asumiendo que la URL es algo como: https://res.cloudinary.com/.../imagen.jpg
-      
+      const imageId = producto.imagen.split("/").pop().split(".")[0]; // Asumiendo que la URL es algo como: https://res.cloudinary.com/.../imagen.jpg
+
       // Eliminar la imagen de Cloudinary
       await cloudinary.uploader.destroy(imageId);
     }
@@ -166,6 +165,5 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ error: "Error interno del servidor" });
   }
 });
-
 
 module.exports = router;
