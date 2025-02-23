@@ -67,29 +67,27 @@ const EditProduct = () => {
   return (
     <div className="container mt-5">
       <h2 className="text-center mb-4">Editar Producto</h2>
-      <div className="p-4 bg-light rounded">
-        <form className="d-flex flex-row align-items-center gap-3">
-          <div className="col-md-4">
+      <div className="p-4 bg-light rounded d-flex justify-content-center">
+        <form className="w-50">
+          <div className="mb-3">
             <label className="form-label">Nombre</label>
             <input type="text" className="form-control" name="nombre" value={producto.nombre} onChange={handleChange} />
           </div>
-          <div className="col-md-4">
+          <div className="mb-3">
             <label className="form-label">Descripción</label>
             <textarea className="form-control" name="descripcion" value={producto.descripcion} onChange={handleChange} />
           </div>
-          <div className="col-md-2">
+          <div className="mb-3">
             <label className="form-label">Precio</label>
             <input type="number" className="form-control" name="precio" value={producto.precio} onChange={handleChange} />
           </div>
-          <div className="col-md-4">
+          <div className="mb-3">
             <label className="form-label">Imagen</label>
             <input type="file" className="form-control" name="imagen" onChange={handleFileChange} />
           </div>
-          <div className="col-md-2 d-flex align-items-end">
-            <button type="button" className="btn btn-warning w-100" onClick={() => setShowModal(true)}>
-              Confirmar
-            </button>
-          </div>
+          <button type="button" className="btn btn-warning w-100" onClick={() => setShowModal(true)}>
+            Confirmar cambios
+          </button>
         </form>
       </div>
 
