@@ -120,7 +120,6 @@ router.put("/:id", upload.single("imagen"), async (req, res) => {
 });
 
 
-
 // Eliminar un producto
 router.delete("/:id", async (req, res) => {
   try {
