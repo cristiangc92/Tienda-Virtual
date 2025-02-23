@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 const EditProduct = () => {
   const { id } = useParams();
@@ -11,14 +12,19 @@ const EditProduct = () => {
     precio: "",
     imagen: null,
   });
-  const [showModal, setShowModal] = useState(false); // Para controlar el modal de confirmación
-  const [showSuccessModal, setShowSuccessModal] = useState(false); // Modal de éxito
+  const [showModal, setShowModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    // Obtener los datos del producto
-    axios.get(`https://tienda-virtual-n5qz.onrender.com/api/productos/${id}`).then((res) => {
-      setProducto(res.data);
-    });
+    axios
+      .get(`https://tienda-virtual-n5qz.onrender.com/api/productos/${id}`)
+      .then((res) => setProducto(res.data))
+      .catch(() => {
+        setErrorMessage("Error al cargar el producto.");
+        setShowErrorModal(true);
+      });
   }, [id]);
 
   const handleChange = (e) => {
@@ -26,113 +32,78 @@ const EditProduct = () => {
   };
 
   const handleFileChange = (e) => {
-    // Si el usuario selecciona una nueva imagen, se guarda en el estado
     setProducto({ ...producto, imagen: e.target.files[0] });
   };
 
   const handleSubmit = async () => {
     const formData = new FormData();
-
-    // Solo agregar los campos que fueron modificados
     if (producto.nombre) formData.append("nombre", producto.nombre);
     if (producto.descripcion) formData.append("descripcion", producto.descripcion);
     if (producto.precio) formData.append("precio", producto.precio);
-
-    // Si hay una nueva imagen seleccionada, agregarla
     if (producto.imagen instanceof File) {
       formData.append("imagen", producto.imagen);
     }
 
     try {
-      // Enviar los cambios al backend
       await axios.put(`https://tienda-virtual-n5qz.onrender.com/api/productos/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      setShowSuccessModal(true);  // Mostrar el modal de éxito
+      setShowSuccessModal(true);
     } catch (error) {
-      console.error("Error al modificar producto", error);
-      alert("Hubo un error al actualizar el producto");
+      setErrorMessage("Hubo un error al actualizar el producto.");
+      setShowErrorModal(true);
     }
   };
 
-  const handleShowModal = () => setShowModal(true);
-  const handleCloseModal = () => setShowModal(false);
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
-    navigate("/"); // Redirigir al home o a la página que desees
+    navigate("/");
   };
 
   return (
-    <div className="container mt-4">
-      <h2>Editar Producto</h2>
-      <form>
-        <div className="mb-3">
-          <label className="form-label">Nombre</label>
-          <input
-            type="text"
-            className="form-control"
-            name="nombre"
-            value={producto.nombre}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Descripción</label>
-          <textarea
-            className="form-control"
-            name="descripcion"
-            value={producto.descripcion}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Precio</label>
-          <input
-            type="number"
-            className="form-control"
-            name="precio"
-            value={producto.precio}
-            onChange={handleChange}
-          />
-        </div>
-        <div className="mb-3">
-          <label className="form-label">Imagen</label>
-          <input
-            type="file"
-            className="form-control"
-            name="imagen"
-            onChange={handleFileChange}
-          />
-        </div>
-        <button type="button" className="btn btn-warning" onClick={handleShowModal}>
-          Confirmar cambios
-        </button>
-      </form>
+    <div className="container mt-5">
+      <div className="card shadow-lg p-4">
+        <h2 className="text-center mb-4">Editar Producto</h2>
+        <form>
+          <div className="mb-3">
+            <label className="form-label">Nombre</label>
+            <input type="text" className="form-control" name="nombre" value={producto.nombre} onChange={handleChange} />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Descripción</label>
+            <textarea className="form-control" name="descripcion" value={producto.descripcion} onChange={handleChange} />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Precio</label>
+            <input type="number" className="form-control" name="precio" value={producto.precio} onChange={handleChange} />
+          </div>
+          <div className="mb-3">
+            <label className="form-label">Imagen</label>
+            <input type="file" className="form-control" name="imagen" onChange={handleFileChange} />
+          </div>
+          <button type="button" className="btn btn-warning w-100" onClick={() => setShowModal(true)}>
+            Confirmar cambios
+          </button>
+        </form>
+      </div>
 
-      {/* Modal de confirmación de edición */}
+      {/* Modal de Confirmación */}
       {showModal && (
-        <div className="modal fade show" style={{ display: "block" }} tabIndex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
+        <div className="modal fade show d-block" tabIndex="-1">
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title" id="modalEditarLabel">Confirmar Edición</h5>
-                <button type="button" className="btn-close" onClick={handleCloseModal} aria-label="Cerrar"></button>
+                <h5 className="modal-title">Confirmar Edición</h5>
+                <button type="button" className="btn-close" onClick={() => setShowModal(false)}></button>
               </div>
               <div className="modal-body">
                 <p>¿Estás seguro de que quieres guardar los cambios del producto <strong>{producto.nombre}</strong>?</p>
               </div>
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>
+                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>
                   Cancelar
                 </button>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={() => {
-                    handleSubmit();  // Llamar a handleSubmit directamente sin el evento
-                    handleCloseModal();
-                  }}
-                >
+                <button type="button" className="btn btn-primary" onClick={() => { handleSubmit(); setShowModal(false); }}>
                   Guardar Cambios
                 </button>
               </div>
@@ -141,25 +112,43 @@ const EditProduct = () => {
         </div>
       )}
 
-      {/* Modal de éxito */}
+      {/* Modal de Éxito */}
       {showSuccessModal && (
-        <div className="modal fade show" style={{ display: "block" }} tabIndex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true">
+        <div className="modal fade show d-block" tabIndex="-1">
           <div className="modal-dialog">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title" id="modalExitoLabel">¡Éxito!</h5>
-                <button type="button" className="btn-close" onClick={handleCloseSuccessModal} aria-label="Cerrar"></button>
+                <h5 className="modal-title">¡Éxito!</h5>
+                <button type="button" className="btn-close" onClick={handleCloseSuccessModal}></button>
               </div>
               <div className="modal-body">
                 <p>El producto ha sido actualizado con éxito.</p>
               </div>
               <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={handleCloseSuccessModal}
-                >
+                <button type="button" className="btn btn-primary" onClick={handleCloseSuccessModal}>
                   Aceptar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Error */}
+      {showErrorModal && (
+        <div className="modal fade show d-block" tabIndex="-1">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header bg-danger text-white">
+                <h5 className="modal-title">Error</h5>
+                <button type="button" className="btn-close" onClick={() => setShowErrorModal(false)}></button>
+              </div>
+              <div className="modal-body">
+                <p>{errorMessage}</p>
+              </div>
+              <div className="modal-footer">
+                <button type="button" className="btn btn-secondary" onClick={() => setShowErrorModal(false)}>
+                  Cerrar
                 </button>
               </div>
             </div>
