@@ -3,12 +3,13 @@ const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
 const Producto = require("../models/Producto");
 const router = express.Router();
+require("dotenv").config(); // Cargar variables de entorno
 
 // Configura Cloudinary
 cloudinary.config({
-  cloud_name: "djfobc4lo",  // Reemplaza con tu Cloud name
-  api_key: "526842571593466",        // Reemplaza con tu API Key
-  api_secret: "l6rttKHtsAwYuNAzQkMOcxEynlk",   // Reemplaza con tu API Secret
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 // Configuración de Multer (para recibir archivos de la solicitud)
