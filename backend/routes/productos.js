@@ -2,6 +2,8 @@ const express = require("express");
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
 const Producto = require("../models/Producto");
+const dotenv = require("dotenv");
+dotenv.config();
 const router = express.Router();
 require("dotenv").config(); // Cargar variables de entorno
 
@@ -71,8 +73,6 @@ router.post("/", upload.single("imagen"), async (req, res) => {
   }
 });
 
-
-
 // Modificar un producto
 router.put("/:id", upload.single("imagen"), async (req, res) => {
   try {
@@ -95,15 +95,19 @@ router.put("/:id", upload.single("imagen"), async (req, res) => {
 
     // Si se sube una nueva imagen, la agregamos al objeto de actualización
     if (req.file) {
-      // Subir la imagen a Cloudinary
-      const result = await cloudinary.uploader.upload(req.file.buffer, {
-        folder: "productos", // Carpeta en Cloudinary donde se almacenará la imagen
-        use_filename: true,  // Utiliza el nombre del archivo original
-        unique_filename: true // Asegura que el nombre del archivo sea único
+      // Subir la imagen a Cloudinary usando un stream
+      const result = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "productos", resource_type: "auto" },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        stream.end(req.file.buffer);
       });
 
-      // Guardar la URL de la imagen en el campo 'imagen' del producto
-      updatedData.imagen = result.secure_url;  // URL accesible públicamente
+      updatedData.imagen = result.secure_url; // URL de la nueva imagen
     }
 
     // Actualizar el producto con los datos proporcionados
@@ -115,7 +119,6 @@ router.put("/:id", upload.single("imagen"), async (req, res) => {
     res.status(500).json({ error: "Error interno del servidor" });
   }
 });
-
 
 // Eliminar un producto
 router.delete("/:id", async (req, res) => {
@@ -131,8 +134,8 @@ router.delete("/:id", async (req, res) => {
     // Verificar si el producto tiene una imagen
     if (producto.imagen) {
       // Extraer el ID de la imagen de la URL (esto depende de cómo almacenes la URL de la imagen)
-      const imageId = producto.imagen.split('/').pop().split('.')[0]; // Asumiendo que la URL es algo como: https://res.cloudinary.com/.../imagen.jpg
-      
+      const imageId = producto.imagen.split("/").pop().split(".")[0]; // Asumiendo que la URL es algo como: https://res.cloudinary.com/.../imagen.jpg
+
       // Eliminar la imagen de Cloudinary
       await cloudinary.uploader.destroy(imageId);
     }
@@ -143,6 +146,23 @@ router.delete("/:id", async (req, res) => {
     res.json({ message: "Producto eliminado correctamente" });
   } catch (error) {
     console.error("Error al eliminar producto:", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
+// Obtener un solo producto por ID
+router.get("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const producto = await Producto.findByPk(id);
+
+    if (!producto) {
+      return res.status(404).json({ error: "Producto no encontrado" });
+    }
+
+    res.json(producto);
+  } catch (error) {
+    console.error("Error al obtener producto:", error);
     res.status(500).json({ error: "Error interno del servidor" });
   }
 });
