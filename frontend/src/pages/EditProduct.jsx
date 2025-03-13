@@ -16,7 +16,7 @@ const EditProduct = () => {
 
   useEffect(() => {
     // Obtener los datos del producto
-    axios.get(`https://tienda-virtual-n5qz.onrender.com/api/productos/${id}`).then((res) => {
+    axios.get(`http://localhost:5000/api/productos/${id}`).then((res) => {
       setProducto(res.data);
     });
   }, [id]);
@@ -45,7 +45,7 @@ const EditProduct = () => {
 
     try {
       // Enviar los cambios al backend
-      await axios.put(`https://tienda-virtual-n5qz.onrender.com/api/productos/${id}`, formData, {
+      await axios.put(`http://localhost:5000/api/productos/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setShowSuccessModal(true);  // Mostrar el modal de éxito

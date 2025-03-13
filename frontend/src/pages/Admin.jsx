@@ -14,7 +14,7 @@ const Admin = () => {
 
   const cargarProductos = () => {
     axios
-      .get("https://tienda-virtual-n5qz.onrender.com/api/productos")
+      .get("http://localhost:5000/api/productos")
       .then((res) => setProductos(res.data));
   };
 
@@ -23,7 +23,7 @@ const Admin = () => {
   };
 
   const eliminarProducto = async (id) => {
-    await axios.delete(`https://tienda-virtual-n5qz.onrender.com/api/productos/${id}`);
+    await axios.delete(`http://localhost:5000/api/productos/${id}`);
     setProductos(productos.filter((producto) => producto.id !== id));
   };
 

@@ -29,7 +29,7 @@ const NewProduct = () => {
     formData.append("imagen", producto.imagen);
 
     try {
-      await axios.post("https://tienda-virtual-n5qz.onrender.com/api/productos", formData, {
+      await axios.post("http://localhost:5000/api/productos", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setShowSuccessModal(true);
